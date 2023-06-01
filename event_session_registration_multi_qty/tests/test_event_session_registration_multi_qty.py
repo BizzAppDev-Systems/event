@@ -3,7 +3,7 @@
 from odoo.tests import common
 
 
-class EventSessionRegistrationMultiQty(common.SavepointCase):
+class EventSessionRegistrationMultiQty(common.TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -61,32 +61,16 @@ class EventSessionRegistrationMultiQty(common.SavepointCase):
         cls.wizard = cls.env["wizard.event.session"].create(
             {
                 "event_id": cls.event.id,
-                "mondays": True,
-                "tuesdays": True,
-                "wednesdays": True,
-                "thursdays": True,
-                "fridays": True,
-                "sundays": True,
-                "saturdays": True,
-                "delete_existing_sessions": False,
-                "session_hour_ids": [(0, 0, {"start_time": 20.0, "end_time": 21.0})],
-            }
-        )
-        cls.template = cls.env["event.mail.template"].create(
-            {
-                "name": "Template test 01",
-                "scheduler_template_ids": [
-                    (
-                        0,
-                        0,
-                        {
-                            "interval_nbr": 15,
-                            "interval_unit": "days",
-                            "interval_type": "before_event",
-                            "template_id": cls.env.ref("event.event_reminder").id,
-                        },
-                    )
-                ],
+                "mon": True,
+                "tue": True,
+                "wed": True,
+                "thu": True,
+                "fri": True,
+                "sun": True,
+                "sat": True,
+                "duration": 2.0,
+                "start": "2022-02-01",
+                "until": "2022-02-28",
             }
         )
 
@@ -100,14 +84,11 @@ class EventSessionRegistrationMultiQty(common.SavepointCase):
         self.assertEqual(self.session.seats_used, 1)
         self.assertEqual(self.session.seats_expected, 26)
         self.assertEqual(self.session.seats_available, 229)
-        self.assertEqual(self.session.seats_available_expected, 224)
         self.attendee_cancel.state = "draft"
         self.assertEqual(self.session.seats_unconfirmed, 15)
         self.assertEqual(self.session.seats_expected, 36)
         self.assertEqual(self.session.seats_available, 229)
-        self.assertEqual(self.session.seats_available_expected, 214)
         self.attendee_cancel.state = "open"
         self.assertEqual(self.session.seats_unconfirmed, 5)
         self.assertEqual(self.session.seats_expected, 36)
         self.assertEqual(self.session.seats_available, 219)
-        self.assertEqual(self.session.seats_available_expected, 214)
