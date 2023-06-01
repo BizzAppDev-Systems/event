@@ -47,7 +47,7 @@ class EventEvent(models.Model):
             )
             event.update(vals)
         rest = self - multi_qty_events
-        super(EventEvent, rest)._compute_seats()
+        return super(EventEvent, rest)._compute_seats()
 
     @api.constrains("registration_multi_qty")
     def _check_attendees_qty(self):
